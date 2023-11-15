@@ -15,11 +15,13 @@
     "@fortawesome/react-fontawesome": "^0.2.0",
     "font-awesome": "^4.7.0",
     "react": "^18.2.0",
+    "react-datepicker": "^4.21.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.18.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",
+    "@types/react-datepicker": "^4.19.3",
     "@types/react-dom": "^18.2.15",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",

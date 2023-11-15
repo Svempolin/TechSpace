@@ -1,17 +1,19 @@
 import React, { useState, useEffect, ChangeEvent, FormEvent } from 'react';
 
+interface FormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+}
+
 interface SignupModalProps {
   onClose: () => void;
-  onSignup: (formData: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-  }) => void;
+  onSignup: (data: FormData) => void;
 }
 
 const SignupModal: React.FC<SignupModalProps> = ({ onClose, onSignup }) => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     firstName: '',
     lastName: '',
     email: '',
@@ -30,7 +32,8 @@ const SignupModal: React.FC<SignupModalProps> = ({ onClose, onSignup }) => {
 
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
-      if ((e.target as HTMLElement).classList.contains('modal')) {
+      const target = e.target as HTMLElement;
+      if (target.classList.contains('modal')) {
         onClose();
       }
     };
@@ -75,7 +78,3 @@ const SignupModal: React.FC<SignupModalProps> = ({ onClose, onSignup }) => {
 };
 
 export default SignupModal;
-
-
-
-

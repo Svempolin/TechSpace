@@ -1,23 +1,23 @@
-import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-// import logo from '../assets/logo.png';
-// import masthead from '../assets/masthead.jpg';
-import LoginModal from "../LoginModal/LoginModal"
-import SignupModal from '../SignupModal/SignupModal';
+import  { useState } from 'react';
+import logo from '../../assets/techspace-logo.png';
+import masthead from '../../assets/masthead_2880.jpg';
+import LoginModal from '../LoginModal/LoginModal'; // Import the LoginModal component
+import SignupModal from '../SignupModal/SignupModal'; // Import the SignupModal component
 
-const Navbar: React.FC = () => {
+const Navbar = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
 
   const toggleLoginModal = () => {
-    setShowLoginModal((prev) => !prev);
+    setShowLoginModal(!showLoginModal);
   };
 
   const toggleSignupModal = () => {
-    setShowSignupModal((prev) => !prev);
+    setShowSignupModal(!showSignupModal);
   };
 
-  const handleLogin = async (formData: { email: string; password: string }) => {
+  const handleLogin = async (formData: any) => {
     try {
       const response = await fetch('http://localhost:7777/api/users/login', {
         method: 'POST',
@@ -26,23 +26,24 @@ const Navbar: React.FC = () => {
         },
         body: JSON.stringify(formData),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
-        localStorage.setItem('token', data.token);
-        // Handle successful login (e.g., redirect to a protected route)
+        localStorage.setItem('accessToken', data.data.token);
+        
       } else {
-        // Handle login failure (e.g., display an error message)
+        throw new Error(data.message);
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
-
-  const handleSignup = async (formData: { email: string; password: string }) => {
+  
+  
+  const handleSignup = async (formData: any) => {
     try {
-      const response = await fetch('http://localhost:7777/api/users/signup', {
+      const response = await fetch('http://localhost:3001/api/users/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,47 +53,41 @@ const Navbar: React.FC = () => {
 
       if (!response.ok) {
         throw new Error('Signup failed');
-      }
-
+    }
+  
       const data = await response.json();
       console.log(data);
     } catch (error) {
-      // Handle errors (e.g., display an error message)
+      // Handle errors (e.g., display error message)
       console.error('Error:', error);
     }
   };
-
-  const handleOutsideClick = (e: React.MouseEvent) => {
-    const target = e.target as HTMLElement;
-    if (target.classList.contains('modal')) {
-      toggleLoginModal();
-    }
-  };
+  
 
   return (
     <>
       <nav className="nav">
-        {/* <Link to="/" className="site-title">
+        <Link to="/" className="site-title">
           <img src={logo} alt="logo" />
-        </Link> */}
+        </Link>
         <ul>
           <Link to="/allvenues">All Venues</Link>
-          <Link to={`/profile/${localStorage.getItem('userId')}`}>Profile</Link>
+          <Link to={`/profile`}>Profile</Link>
 
           <li>
-            <button onClick={toggleLoginModal}>Login</button>
-          </li>
-          {showLoginModal && (
-            <LoginModal onClose={toggleLoginModal} onLogin={handleLogin} onSignup={toggleSignupModal} />
-          )}
-          {showSignupModal && (
-            <SignupModal onClose={toggleSignupModal} onSignup={handleSignup} />
-          )}
+        <button onClick={toggleLoginModal}>Login</button>
+      </li>
+      {showLoginModal && (
+        <LoginModal onClose={toggleLoginModal} onLogin={handleLogin} onSignup={toggleSignupModal} />
+      )}
+      {showSignupModal && (
+        <SignupModal onClose={toggleSignupModal} onSignup={handleSignup} />
+      )}
         </ul>
       </nav>
-      {/* <div className="masthead">
+      <div className="masthead">
         <img src={masthead} alt="masthead" />
-      </div> */}
+      </div>
     </>
   );
 };

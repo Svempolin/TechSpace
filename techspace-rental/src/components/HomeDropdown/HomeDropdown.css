@@ -1,0 +1,60 @@
+
+
+.main-box {
+  
+  width: 1013px;
+  height: 334px;
+  border-radius: 8px;
+  background-color: #252525;
+  padding: 20px;
+}
+
+h2 {
+  color: white;
+  background-color: #252525;
+  text-align: center;
+  margin: 0;
+  padding-bottom: 20px;
+}
+
+.dropdowns {
+  display: flex;
+ /* Set the direction to row */
+  justify-content: space-between;
+  background-color: #252525;
+}
+
+.dropdown {
+  width: 45%;
+  margin-bottom: 20px;
+  flex-direction: row;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: white;
+}
+
+select {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  margin-bottom: 10px; 
+}
+
+.submit-button {
+  width: 178px;
+  height: 44px;
+  border-radius: 20px;
+  background-color: #ff69b4;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  margin-top: 20px; /* Add margin-top to separate button from dropdown */
+  align-self: flex-end;
+  
+}

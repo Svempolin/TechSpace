@@ -1,46 +1,26 @@
-import React from 'react';
-import { useNavigate, NavigateFunction } from 'react-router-dom';
+import React, { ComponentType, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface ProtectedRouteProps {
-  // Assuming Component is a React component type
-  Component: React.ComponentType<any>;
+  isAuthenticated: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ Component, ...props }) => {
-  const isAuthenticated = !!localStorage.getItem('token'); // !! boolean casting
-  const navigate = useNavigate() as NavigateFunction;
+const ProtectedRoute = <P extends object>(Component: ComponentType<P>): React.FC<P & ProtectedRouteProps> => {
+  const AuthRoute: React.FC<P & ProtectedRouteProps> = (props) => {
+    const { isAuthenticated, ...rest } = props;
+    const navigate = useNavigate();
 
-  if (isAuthenticated) {
-    return <Component {...props} />;
-  } else {
-    navigate('/login');
-    return null;
-  }
+    useEffect(() => {
+      if (!isAuthenticated) {
+        navigate('/login');
+      }
+    }, [isAuthenticated, navigate]);
+
+    return isAuthenticated ? <Component {...rest as P} /> : null;
+  };
+
+  return AuthRoute;
 };
 
 export default ProtectedRoute;
 
-
-
-
-// // ProtectedRoute.jsx
-// import React from 'react';
-// import { useNavigate } from 'react-router-dom';
-
-// const ProtectedRoute = (Component) => {
-//   const AuthRoute = (props) => {
-//     const isAuthenticated = !!localStorage.getItem('token'); // !! boolean casting
-//     const navigate = useNavigate();
-
-//     if (isAuthenticated) {
-//       return <Component {...props} />;
-//     } else {
-//       navigate('/login');
-//       return null;
-//     }
-//   };
-
-//   return AuthRoute;
-// };
-
-// export default ProtectedRoute;
