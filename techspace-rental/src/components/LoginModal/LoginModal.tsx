@@ -18,6 +18,8 @@ const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin, onSignup }) =
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+  
+    console.log(formData);
     onLogin(formData);
     onClose(); // Close the modal after submission
   };

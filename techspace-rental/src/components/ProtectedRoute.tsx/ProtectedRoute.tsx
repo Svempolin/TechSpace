@@ -2,7 +2,7 @@ import React, { ComponentType, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface ProtectedRouteProps {
-  isAuthenticated: boolean;
+  isAuthenticated: boolean; // You should get this value from your authentication logic
 }
 
 const ProtectedRoute = <P extends object>(Component: ComponentType<P>): React.FC<P & ProtectedRouteProps> => {
@@ -12,7 +12,7 @@ const ProtectedRoute = <P extends object>(Component: ComponentType<P>): React.FC
 
     useEffect(() => {
       if (!isAuthenticated) {
-        navigate('/login');
+        navigate('/login'); // Redirect to login if not authenticated
       }
     }, [isAuthenticated, navigate]);
 
@@ -23,4 +23,3 @@ const ProtectedRoute = <P extends object>(Component: ComponentType<P>): React.FC
 };
 
 export default ProtectedRoute;
-

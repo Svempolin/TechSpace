@@ -12,13 +12,15 @@ interface SignupModalProps {
   onSignup: (data: FormData) => void;
 }
 
+const initialFormData: FormData = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  password: ''
+};
+
 const SignupModal: React.FC<SignupModalProps> = ({ onClose, onSignup }) => {
-  const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    password: ''
-  });
+  const [formData, setFormData] = useState<FormData>(initialFormData);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

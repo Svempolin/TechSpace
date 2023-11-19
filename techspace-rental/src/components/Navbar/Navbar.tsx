@@ -4,10 +4,13 @@ import logo from '../../assets/techspace-logo.png';
 import masthead from '../../assets/masthead_2880.jpg';
 import LoginModal from '../LoginModal/LoginModal'; // Import the LoginModal component
 import SignupModal from '../SignupModal/SignupModal'; // Import the SignupModal component
+import ProtectedRoute from '../ProtectedRoute.tsx/ProtectedRoute';
+
 
 const Navbar = () => {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   const toggleLoginModal = () => {
     setShowLoginModal(!showLoginModal);
@@ -16,9 +19,9 @@ const Navbar = () => {
   const toggleSignupModal = () => {
     setShowSignupModal(!showSignupModal);
   };
-
-  const handleLogin = async (formData: any) => {
+  const handleLogin = async (formData: { email: string; password: string }) => {
     try {
+      console.log('Login form data:', formData);
       const response = await fetch('http://localhost:7777/api/users/login', {
         method: 'POST',
         headers: {
@@ -27,23 +30,50 @@ const Navbar = () => {
         body: JSON.stringify(formData),
       });
   
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+  
       const data = await response.json();
   
-      if (response.ok) {
-        localStorage.setItem('accessToken', data.data.token);
-        
-      } else {
-        throw new Error(data.message);
-      }
-    } catch (error) {
-      console.error('Error:', error);
+      localStorage.setItem('accessToken', data.data.token);
+      setIsAuthenticated(true); // Set authentication status to true upon successful login
+      console.log('Login successful:', data); // Log successful login data
+    } catch (error: any) {
+      console.error('Error during login:', error.message);
+      // Handle different error scenarios based on error.message or response status codes
+      // For example, display an error message to the user based on the specific error
     }
   };
+  // const handleLogin = async (formData: { email: string; password: string }) => {
+  //   try {
+  //     console.log('Login form data:', formData);
+  //     const response = await fetch('http://localhost:7777/api/users/login', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(formData),
+  //     });
+  
+  //     const data = await response.json();
+  
+  //     if (response.ok) {
+  //       localStorage.setItem('accessToken', data.data.token);
+  //       setIsAuthenticated(true); // Set authentication status to true upon successful login
+  //       console.log('Login successful:', data); // Log successful login data
+  //     } else {
+  //       throw new Error(data.message);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error during login:', error);
+  //   }
+  // };
   
   
   const handleSignup = async (formData: any) => {
     try {
-      const response = await fetch('http://localhost:3001/api/users/signup', {
+      const response = await fetch('http://localhost:7777/api/users/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,15 +83,15 @@ const Navbar = () => {
 
       if (!response.ok) {
         throw new Error('Signup failed');
-    }
-  
+      }
+
       const data = await response.json();
       console.log(data);
     } catch (error) {
-      // Handle errors (e.g., display error message)
       console.error('Error:', error);
     }
   };
+
   
 
   return (
