@@ -1,22 +1,23 @@
-import React, { ComponentType, useEffect } from 'react';
+import React, {  useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-interface ProtectedRouteProps {
-  isAuthenticated: boolean; // You should get this value from your authentication logic
+export interface ProtectedRouteProps {
+  isAuthenticated: boolean;
+  // You can include other necessary props for your ProtectedRoute
 }
 
-const ProtectedRoute = <P extends object>(Component: ComponentType<P>): React.FC<P & ProtectedRouteProps> => {
-  const AuthRoute: React.FC<P & ProtectedRouteProps> = (props) => {
-    const { isAuthenticated, ...rest } = props;
+
+const ProtectedRoute = <P extends object & ProtectedRouteProps>(Component: React.ComponentType<P>): React.FC<P> => {
+  const AuthRoute: React.FC<P> = (props) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-      if (!isAuthenticated) {
+      if (!props.isAuthenticated) {
         navigate('/login'); // Redirect to login if not authenticated
       }
-    }, [isAuthenticated, navigate]);
+    }, [props.isAuthenticated, navigate]);
 
-    return isAuthenticated ? <Component {...rest as P} /> : null;
+    return props.isAuthenticated ? <Component {...props} /> : null;
   };
 
   return AuthRoute;

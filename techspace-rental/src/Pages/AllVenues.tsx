@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import BookableCard from '../components/ConferenceCard/ConferenceCard';
 import DatePicker from "react-datepicker";
 import 'react-datepicker/dist/react-datepicker.css';
+import { Link } from 'react-router-dom';
 
 const AllVenues: React.FC = () => {
   const [bookables, setBookables] = useState<any[]>([]);
@@ -77,13 +78,18 @@ const AllVenues: React.FC = () => {
   };
 
   const handleLoadMore = () => {
-    const nextBookables = bookables.length + 16;
-    const remainingBookables = filteredBookables.slice(nextBookables, nextBookables + 16);
+    const currentBookablesCount = bookables.length;
+    const remainingBookablesCount = filteredBookables.length - currentBookablesCount;
+    const nextBookables = currentBookablesCount + 16;
   
-    setBookables((prevBookables) => [...prevBookables, ...remainingBookables]);
-    setShowLoadMore(remainingBookables.length > 0);
+    if (remainingBookablesCount > 0) {
+      const newBookables = filteredBookables.slice(nextBookables, nextBookables + 16);
+      setBookables((prevBookables) => [...prevBookables, ...newBookables]);
+      setShowLoadMore(remainingBookablesCount > 16);
+    } else {
+      setShowLoadMore(false);
+    }
   };
-
   const handleReset = () => {
     setAttendees("");
     setStartDate(new Date());
@@ -150,11 +156,18 @@ const AllVenues: React.FC = () => {
       <div className='all-venues-wrapper'>
         <div className="all-venues">
           <div className="all-bookable-list">
-            {bookables.map((bookable: any) => (
-              <BookableCard key={bookable._id} bookable={bookable} />
+         
+          {bookables.map((bookable: any) => (
+        <Link key={bookable._id} to={`/bookable/${bookable._id}`}>
+          {/* Use Link component to navigate to bookable details */}
+          <BookableCard bookable={bookable} />
+        </Link>
             ))}
+      
           </div>
+          <div className='load-more button' >
           {showLoadMore && <button onClick={handleLoadMore}>Load More</button>}
+          </div>
         </div>
       </div>
     </>

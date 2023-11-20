@@ -41,34 +41,17 @@ const Navbar = () => {
       console.log('Login successful:', data); // Log successful login data
     } catch (error: any) {
       console.error('Error during login:', error.message);
-      // Handle different error scenarios based on error.message or response status codes
-      // For example, display an error message to the user based on the specific error
+
     }
   };
-  // const handleLogin = async (formData: { email: string; password: string }) => {
-  //   try {
-  //     console.log('Login form data:', formData);
-  //     const response = await fetch('http://localhost:7777/api/users/login', {
-  //       method: 'POST',
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //       },
-  //       body: JSON.stringify(formData),
-  //     });
-  
-  //     const data = await response.json();
-  
-  //     if (response.ok) {
-  //       localStorage.setItem('accessToken', data.data.token);
-  //       setIsAuthenticated(true); // Set authentication status to true upon successful login
-  //       console.log('Login successful:', data); // Log successful login data
-  //     } else {
-  //       throw new Error(data.message);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error during login:', error);
-  //   }
-  // };
+
+  const handleLogout = () => {
+    // Clear authentication status and perform any other necessary logout operations
+    setIsAuthenticated(false);
+    // Clear localStorage or perform any other necessary cleanup
+    localStorage.removeItem('accessToken');
+  };
+ 
   
   
   const handleSignup = async (formData: any) => {
@@ -102,16 +85,21 @@ const Navbar = () => {
         </Link>
         <ul>
           <Link to="/allvenues">All Venues</Link>
-          <Link to={`/profile`}>Profile</Link>
+          {isAuthenticated && <Link to={`/profile`}>Profile</Link>}
+        
 
           <li>
-        <button onClick={toggleLoginModal}>Login</button>
+        {isAuthenticated ? (
+        <button onClick={handleLogout}>Logout</button>
+        ) : (
+          <button onClick={toggleLoginModal}>Login</button>
+          )}
+
       </li>
       {showLoginModal && (
         <LoginModal onClose={toggleLoginModal} onLogin={handleLogin} onSignup={toggleSignupModal} />
       )}
-      {showSignupModal && (
-        <SignupModal onClose={toggleSignupModal} onSignup={handleSignup} />
+      {showSignupModal && ( <SignupModal onClose={toggleSignupModal} onSignup={handleSignup} />
       )}
         </ul>
       </nav>

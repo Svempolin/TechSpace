@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 interface LoginModalProps {
   onClose: () => void;
   onLogin: (formData: { email: string; password: string }) => void;
-  onSignup: () => void;
+  onSignup: (formData: Record<string, any>) => Promise<void>;
 }
 
 const LoginModal: React.FC<LoginModalProps> = ({ onClose, onLogin, onSignup }) => {
