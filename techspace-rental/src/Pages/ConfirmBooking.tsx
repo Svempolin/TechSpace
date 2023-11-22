@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 
 interface BookingDetails {
   attendees: string;
@@ -20,9 +21,13 @@ const getUserFromStorage = (): any => {
 };
 
 const ConfirmBooking: React.FC = () => {
+
   const location = useLocation();
   const [bookingDetails, setBookingDetails] = useState<BookingDetails | null>(null);
   const user = getUserFromStorage();
+  const token = localStorage.getItem('token');
+  const navigate = useNavigate();
+
 
   useEffect(() => {
     const storedBookingDetails = localStorage.getItem('bookingDetails');
@@ -39,6 +44,14 @@ const ConfirmBooking: React.FC = () => {
         return;
       }
 
+      const token = localStorage.getItem('token');
+      console.log('Token:', token); // Add console log to check token value
+
+      if (!token) {
+        console.error('Token not found.'); // Log an error if token is missing
+        return;
+      }
+
       const reservation = {
         bookable_id: bookingDetails.bookable._id,
         user_id: user?._id,
@@ -51,14 +64,14 @@ const ConfirmBooking: React.FC = () => {
         status: 'pending',
       };
 
-      const response = await fetch('http://localhost:7777/api/reservations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token') || ''}`,
-        },
-        body: JSON.stringify(reservation),
-      });
+      const response = await fetch('http://localhost:7777/createReservation', {
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token || ''}`,
+  } ,
+  body: JSON.stringify(reservation),
+   });
 
       if (!response.ok) {
         console.error('Error creating reservation:', response.status, response.statusText);
@@ -68,7 +81,8 @@ const ConfirmBooking: React.FC = () => {
       const responseData = await response.json();
 
       if (responseData.status === 'success' && responseData.data && responseData.data.reservation) {
-        window.location.href = '/confirmation'; // Redirect to the confirmation page
+        console.log('Reservation created:', responseData.data.reservation);
+        navigate('/confirmation'); // Redirect to the confirmation page if logged in
       } else {
         console.error('Error creating reservation:', responseData);
       }
@@ -103,8 +117,8 @@ const ConfirmBooking: React.FC = () => {
       <div className='buttons'>
         <button>Cancel</button>
         <button className='confirm-button' onClick={handleConfirmBooking}>
-          CONFIRM BOOKING
-        </button>
+        CONFIRM BOOKING
+      </button>
       </div>
     </div>
   );

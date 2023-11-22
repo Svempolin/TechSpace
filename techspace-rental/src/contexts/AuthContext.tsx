@@ -13,12 +13,34 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const login = async (formData: Record<string, any>) => {
-    // Login logic remains the same...
+    try {
+      // Your login logic here...
+      const response = await fetch('http://localhost:7777/api/users/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      console.log(data);
+
+      setIsLoggedIn(true); // Update the authentication state
+      localStorage.setItem('token', data.data.token);
+    } catch (error) {
+      console.error('Error during login:', error);
+      throw error; // Propagate the error to handle it in the component
+    }
   };
 
-  const signup = async (formData: Record<string, any>): Promise<void> => {
+  const signup = async (formData: Record<string, any>) => {
     try {
-      // Your signup logic here
+      // Your signup logic here...
       const response = await fetch('http://localhost:7777/api/users/signup', {
         method: 'POST',
         headers: {
@@ -26,29 +48,37 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
         },
         body: JSON.stringify(formData),
       });
-  
+
       if (!response.ok) {
         throw new Error('Signup failed');
       }
-  
+
       const data = await response.json();
       console.log(data);
-  
-      setIsLoggedIn(true);
+
+      setIsLoggedIn(true); // Update the authentication state
       localStorage.setItem('token', data.data.token);
     } catch (error) {
       console.error('Error during signup:', error);
       throw error; // Propagate the error to handle it in the component
     }
   };
-  
 
   const logout = () => {
-    // Logout logic remains the same...
+    // Implement your logout logic here...
+    setIsLoggedIn(false); // Update the authentication state
+    localStorage.removeItem('token');
+  };
+
+  const authContextValue: AuthContextProps = {
+    isLoggedIn,
+    login,
+    signup,
+    logout,
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, signup, logout }}>
+    <AuthContext.Provider value={authContextValue}>
       {children}
     </AuthContext.Provider>
   );
@@ -62,34 +92,4 @@ const useAuth = (): AuthContextProps => {
   return context;
 };
 
-const signup = async (formData: Record<string, any>): Promise<void> => {
-  try {
-    // Your signup logic here
-    const response = await fetch('http://localhost:7777/api/users/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-
-    if (!response.ok) {
-      throw new Error('Signup failed');
-    }
-
-    const data = await response.json();
-    console.log(data);
-
-    const setIsLoggedIn = (value: boolean) => {
-      // Update the state or perform any other logic
-    };
-
-    setIsLoggedIn(true);
-    localStorage.setItem('token', data.data.token);
-  } catch (error) {
-    console.error('Error during signup:', error);
-    throw error; // Propagate the error to handle it in the component
-  }
-};
-
-export { AuthProvider, useAuth, signup, AuthContext };
+export { AuthProvider, useAuth};

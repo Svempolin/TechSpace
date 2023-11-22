@@ -1,59 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import LoginModal from '../components/LoginModal/LoginModal';
-
-import { useAuth,signup } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 import BookableList from '../components/ConferenceList/ConferenceList';
 import { useNavigate, useParams } from 'react-router-dom';
 import GMapsPlaceholder from '../assets/GMapsPlaceholder.png';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMaximize, faWifi, faWheelchair, faUtensils } from '@fortawesome/free-solid-svg-icons';
+import {
+
+  faMaximize,
+  faWifi,
+  faWheelchair,
+  faUtensils,
+} from '@fortawesome/free-solid-svg-icons';
 import boardroom from '../assets/icon-boardroom.png';
 import classroom from '../assets/icon-classroom.png';
 import standing from '../assets/icon-standing.png';
 import theatre from '../assets/icon-theatre.png';
 
-interface Bookable {
-  name: string;
-  images: string[];
-  description: string;
-  size: number;
-  address: string;
-  price: number;
-  // Add other properties with their respective types based on your API response
-}
-
-
-const BookableDetails: React.FC = () => {
+const BookableDetails = () => {
+  const { signup } = useAuth(); // Get the signup function from the authentication context
   const { isLoggedIn, login } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
-  const { id } = useParams<{ id: string }>();
-  const [bookable, setBookable] = useState<Bookable | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [selectedImage, setSelectedImage] = useState<number>(0);
-  const [startDate, setStartDate] = useState<Date>(new Date());
-  const [showTooltip, setShowTooltip] = useState<boolean>(false);
+  const { id } = useParams<{ id: string }>(); // Ensure to set the correct type for id
+  const [bookable, setBookable] = useState<any>(null); // Replace 'any' with your bookable type
+  const [loading, setLoading] = useState(true);
+  const [selectedImage, setSelectedImage] = useState(0);
+  const [startDate, setStartDate] = useState(new Date());
+  const [showTooltip, setShowTooltip] = useState(false);
 
-  const [attendees, setAttendees] = useState<string>("");
-  const [time, setTime] = useState<string>("option1");
-  const [addCatering, setAddCatering] = useState<boolean>(false);
-  const [pricePerHour, setPricePerHour] = useState<number>(0);
-  const [cleaningFee, setCleaningFee] = useState<number>(399);
-  const [totalPrice, setTotalPrice] = useState<number>(0);
+  const [attendees, setAttendees] = useState('');
+  const [date, setDate] = useState(new Date());
+  const [time, setTime] = useState("option1");
+  const [addCatering, setAddCatering] = useState(false);
 
+  const [pricePerHour, setPricePerHour] = useState(0);
+  const [cleaningFee, setCleaningFee] = useState(399);
+  const [totalPrice, setTotalPrice] = useState(0);
 
-  
-  const calculateTotalPrice = (): number => {
+  const calculateTotalPrice = () => {
     const hours = calculateHours();
     return pricePerHour * hours + cleaningFee;
   };
 
-  const calculateHours = (): number => {
+  const calculateHours = () => {
     switch (time) {
       case "08-12PM":
+        return 4;
       case "12-04PM":
+        return 4;
       case "04-08PM":
         return 4;
       case "08AM-08PM":
@@ -64,26 +61,37 @@ const BookableDetails: React.FC = () => {
   };
 
   const navigate = useNavigate();
-
-  const handleSubmit = (e: React.FormEvent<HTMLButtonElement>): void => {
+ 
+  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!isLoggedIn) {
-      setShowLoginModal(true);
-      return;
-    }
-
+  console.log('handleSubmit');
     const bookingDetails = {
       bookable,
       attendees,
       date: startDate,
-      time,
+      time: time,
       addCatering,
       calculateTotalPrice: totalPrice,
     };
 
+    // Function to handle navigation after login
+    const handleNavigationAfterLogin = () => {
+      navigate('/confirm-booking', { state: { token: localStorage.getItem('token') } });
+    };
+
+    // If user is not logged in, show the login modal
+    if (!isLoggedIn) {
+      setShowLoginModal(true);
+      console.log('hej ej ');
+      return;
+    }
+
+    // If user is logged in, navigate to confirmBooking
     localStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+    console.log('hej nu ska du bli navigerad  ');
     navigate('/confirm-booking', { state: { token: localStorage.getItem('token') } });
   };
+
 
   useEffect(() => {
     const newTotalPrice = calculateTotalPrice();
@@ -127,13 +135,13 @@ const BookableDetails: React.FC = () => {
       <img className='GMaps-placeholder' src={GMapsPlaceholder} alt="Google Maps Placeholder" />
 </div>
 <div className="small-images">
-    {bookable.images && bookable.images.length > 0 && (
-        bookable.images.map((image, index) => (
-            <div key={index} onClick={() => handleImageClick(index)}>
-                <img src={image} alt={`Image ${index}`} />
-            </div>
-        ))
-    )}
+  {bookable.images && bookable.images.length > 0 && (
+    bookable.images.map((image: string, index: number) => (
+      <div key={index} onClick={() => handleImageClick(index)}>
+        <img src={image} alt={`Image ${index}`} />
+      </div>
+    ))
+  )}
 </div>
 </div>
 <div className='bookable-details-grid'>
@@ -200,7 +208,7 @@ const BookableDetails: React.FC = () => {
       </label>
       <DatePicker
   selected={startDate}
-  onChange={(date) => date && setStartDate(date as Date)}
+  onChange={(date) => setStartDate(date || new Date())}
   className="date-picker confirm-booking-dropdown"
 />
     </div>
@@ -251,12 +259,21 @@ const BookableDetails: React.FC = () => {
     <button className="confirm-booking-button" onClick={handleSubmit}>BOOK NOW</button>
   </div>
   {showLoginModal && (
-      <LoginModal
-        onLogin={login}
-        onSignup={ signup} // Make sure to provide the onSignup function or value
-        onClose={() => setShowLoginModal(false)}
-      />
-    )}
+        <LoginModal
+          onLogin={() => {}}
+          onSignup={async (formData) => {
+            try {
+              // Call the signup function from your authentication context
+              await signup(formData);
+              setShowLoginModal(false); // Close the modal after successful signup
+            } catch (error) {
+              console.error('Error during signup:', error);
+              // Handle signup error, if needed
+            }
+          }}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
   <div className='terms-p'>
     <p>Confirmation and Payment Options to follow.</p>
     <p><span>Terms & Conditions</span> apply.</p>
