@@ -7,7 +7,7 @@ import { Route } from 'react-router-dom';
 import AllVenues from './Pages/AllVenues';
 import Home from './Pages/Home';
 import Profile from './Pages/Profile';
-import UserBookingDetails from './Pages/UserBookingDetails';
+import BookingDetails from './Pages/BookingDetails';
 import BookableDetails from './Pages/BookableDetails';
 import { AuthProvider } from './contexts/AuthContext';
 import ConfirmBooking from './Pages/ConfirmBooking';
@@ -24,7 +24,7 @@ const App: React.FC = () => {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/allvenues" element={<AllVenues />} />
-            <Route path="/booking-details/:id" element={<UserBookingDetails />} />
+            <Route path="/booking-details/:id" element={<BookingDetails />} />
             <Route path="/confirmation" element={<Confirmation />} />
             <Route path="/bookable/:id" element={<BookableDetails />} />
             <Route

@@ -73,11 +73,35 @@ const BookableDetails = () => {
       addCatering,
       calculateTotalPrice: totalPrice,
     };
-
-    // Function to handle navigation after login
-    const handleNavigationAfterLogin = () => {
-      navigate('/confirm-booking', { state: { token: localStorage.getItem('token') } });
-    };
+    const user = JSON.parse(localStorage.getItem("user") || "");
+    console.log("token", localStorage.getItem("token"));
+    fetch('http://localhost:7777/api/reservations/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+      body: JSON.stringify({
+        bookable_id: bookable._id,
+        user_id: user?._id,
+        date: startDate,
+        time,
+        attendees,
+        total_price: 1000,
+      }),
+      }).then((response) => {
+        response.json().then((data) => {
+          console.log(
+            'Successful created reservation',
+            JSON.stringify(data, null, 2)
+          );
+          navigate(`/booking-details/${data.reservation._id}`, { state: { token: localStorage.getItem('token') } });
+        });
+      }).catch((error) => {
+        console.error('Error during reservation creation:', error)
+      });
+    
+     console.log('bookingDetails', bookingDetails);
 
     // If user is not logged in, show the login modal
     if (!isLoggedIn) {
@@ -87,9 +111,9 @@ const BookableDetails = () => {
     }
 
     // If user is logged in, navigate to confirmBooking
-    localStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
-    console.log('hej nu ska du bli navigerad  ');
-    navigate('/confirm-booking', { state: { token: localStorage.getItem('token') } });
+//    localStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+//    console.log('hej nu ska du bli navigerad  ');
+//    navigate(`/booking-details/${id}`, { state: { token: localStorage.getItem('token') } });
   };
 
 

@@ -32,6 +32,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
       setIsLoggedIn(true); // Update the authentication state
       localStorage.setItem('token', data.data.token);
+      localStorage.setItem('user', JSON.stringify(data.data.user));
     } catch (error) {
       console.error('Error during login:', error);
       throw error; // Propagate the error to handle it in the component
@@ -58,6 +59,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
       setIsLoggedIn(true); // Update the authentication state
       localStorage.setItem('token', data.data.token);
+      localStorage.setItem('user', data.data.user);
     } catch (error) {
       console.error('Error during signup:', error);
       throw error; // Propagate the error to handle it in the component
@@ -68,6 +70,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     // Implement your logout logic here...
     setIsLoggedIn(false); // Update the authentication state
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
   };
 
   const authContextValue: AuthContextProps = {
