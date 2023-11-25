@@ -23,7 +23,7 @@ const MapContainer: React.FC<MapContainerProps> = ({ latitude, longitude }) => {
 
   console.log(defaultCenter);
   return (
-    <LoadScript googleMapsApiKey="YOUR_API_KEY">
+    <LoadScript googleMapsApiKey="SECRET_KEY ">
       <GoogleMap
         mapContainerStyle={{ height: '100%', width: '100%' }}
         zoom={14}

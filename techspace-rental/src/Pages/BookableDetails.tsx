@@ -64,7 +64,8 @@ const BookableDetails = () => {
  
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-  console.log('handleSubmit');
+    console.log('handleSubmit');
+  
     const bookingDetails = {
       bookable,
       attendees,
@@ -73,48 +74,65 @@ const BookableDetails = () => {
       addCatering,
       calculateTotalPrice: totalPrice,
     };
-    const user = JSON.parse(localStorage.getItem("user") || "");
-    console.log("token", localStorage.getItem("token"));
-    fetch('http://localhost:7777/api/reservations/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-      body: JSON.stringify({
-        bookable_id: bookable._id,
-        user_id: user?._id,
-        date: startDate,
-        time,
-        attendees,
-        total_price: 1000,
-      }),
-      }).then((response) => {
-        response.json().then((data) => {
-          console.log(
-            'Successful created reservation',
-            JSON.stringify(data, null, 2)
-          );
-          navigate(`/booking-details/${data.reservation._id}`, { state: { token: localStorage.getItem('token') } });
-        });
-      }).catch((error) => {
-        console.error('Error during reservation creation:', error)
-      });
-    
-     console.log('bookingDetails', bookingDetails);
-
-    // If user is not logged in, show the login modal
-    if (!isLoggedIn) {
-      setShowLoginModal(true);
-      console.log('hej ej ');
-      return;
+    console.log('bookingDetails', bookingDetails);
+    try {
+      const userString = localStorage.getItem("user");
+      const user = userString ? JSON.parse(userString) : null;
+      console.log('bookable: ', bookable);
+      console.log('user  :', user);
+      console.log("token", localStorage.getItem("token"));
+  
+      if (bookable && bookable._id&& user && user._id) {
+        fetch('http://localhost:7777/api/reservations/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify({
+            bookable_id: bookable._id,
+            user_id: user?._id,
+            date: startDate,
+            time,
+            attendees,
+            total_price: 1000,
+          }),
+        })
+          .then((response) => {
+            response.json().then((data) => {
+              console.log('Reservation Data:', data.reservation); // Log the reservation data
+              console.log(
+                'Successful created reservation',
+                JSON.stringify(data, null, 2)
+              );
+              navigate(`/booking-details/${data.data.reservation._id}`, { state: { token: localStorage.getItem('token') } });
+            }).catch((error) => {
+              console.error('Error during reservation creation:', error);
+            });
+          })
+          .catch((error) => {
+            console.error('Error during fetch:', error);
+          });
+        }
+      console.log('bookingDetails', bookingDetails);
+  
+      // If user is not logged in, show the login modal
+      if (!isLoggedIn) {
+        setShowLoginModal(true);
+        console.log('hej ej ');
+        return;
+      }
+  
+      // If user is logged in, navigate to confirmBooking
+      // localStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
+      // console.log('hej nu ska du bli navigerad  ');
+      // navigate(`/booking-details/${id}`, { state: { token: localStorage.getItem('token') } });
+    } catch (error) {
+      console.error('Error parsing user data:', error);
+      // Handle the parsing error as needed
     }
-
-    // If user is logged in, navigate to confirmBooking
-//    localStorage.setItem('bookingDetails', JSON.stringify(bookingDetails));
-//    console.log('hej nu ska du bli navigerad  ');
-//    navigate(`/booking-details/${id}`, { state: { token: localStorage.getItem('token') } });
   };
+  
 
 
   useEffect(() => {

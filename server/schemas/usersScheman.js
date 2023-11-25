@@ -3,13 +3,13 @@ import mongoose from "mongoose";
 
 const usersSchema =  new mongoose.Schema(
   {
-    firstNamn: {
+    firstName: {
       type: String,
       required: true,
       min: 3,
       max: 20,
-    }, 
-    lastNamn: {
+    },
+    lastName: {
       type: String,
       required: true,
       min: 3,
@@ -21,18 +21,12 @@ const usersSchema =  new mongoose.Schema(
       max: 50,
       unique: true,
     },
-    passwordHash: {
+    password: {
       type: String,
       required: true,
-      lowercase: true,
       min: 6,
     },
-    picture:{
-      type:String,
-      default:""
-    },
-    // likedListings: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Listing' }],
-
+  
   
   }
   );
